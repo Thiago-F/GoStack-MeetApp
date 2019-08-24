@@ -1,0 +1,8 @@
+{
+  "name": "GoStack-MeetApp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Thiago-F/GoStack-MeetApp.git",
+  "author": "Thiago <thiagofialho39@gmail.com>",
+  "license": "MIT"
+}
