@@ -1,7 +1,25 @@
+import * as Yup from 'yup';
 import User from '../models/User';
 
 class UserController {
     async store(req, res) {
+        // validação
+        const validation = Yup.object().shape({
+            name: Yup.string()
+                .required()
+                .min(6)
+                .max(255),
+            email: Yup.email().required(),
+            password: Yup.string()
+                .required()
+                .min(6)
+                .max(255),
+        });
+
+        if (!(await validation.isValid())) {
+            return res.status(400).json({ error: 'Validation fails' });
+        }
+
         const { name, email, password } = req.body;
 
         // Check if user exists
