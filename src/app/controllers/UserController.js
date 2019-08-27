@@ -9,29 +9,31 @@ class UserController {
                 .required()
                 .min(6)
                 .max(255),
-            email: Yup.email().required(),
+            email: Yup.string()
+                .email()
+                .required(),
             password: Yup.string()
                 .required()
                 .min(6)
                 .max(255),
         });
 
-        if (!(await validation.isValid())) {
+        if (!(await validation.isValid(req.body))) {
             return res.status(400).json({ error: 'Validation fails' });
         }
 
-        const { name, email, password } = req.body;
-
         // Check if user exists
-        const checkUserExists = await User.findOne({ where: { email } });
+        const checkUserExists = await User.findOne({
+            where: { email: req.body.email },
+        });
         if (checkUserExists) {
             return res.status(401).json({ error: 'User already exists' });
         }
 
         // add user to database
-        const user = await User.create({ name, email, password });
+        const { id, name, email } = await User.create(req.body);
 
-        return res.json(user);
+        return res.json({ id, name, email });
     }
 }
 
