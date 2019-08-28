@@ -3,12 +3,17 @@ import { startOfHour, parseISO, isBefore } from 'date-fns';
 import Meetup from '../models/Meetup';
 
 class MeetupController {
-    async list(req, res) {
+    async index(req, res) {
         const meetups = await Meetup.findAll({
             where: { user_id: req.userId },
         });
 
         return res.json(meetups);
+    }
+
+    // criar listagem de meetups por data
+    async list(req, res) {
+        return res.json({ list: true });
     }
 
     async store(req, res) {
