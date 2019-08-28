@@ -25,6 +25,9 @@ routes.put('/users', UserController.update);
 routes.post('/file', uploads.single('file'), FileController.store);
 
 // add new meetup
+routes.get('/meetup', MeetupController.list);
 routes.post('/meetup', MeetupController.store);
+routes.put('/meetup', MeetupController.update);
+routes.delete('/meetup', MeetupController.delete);
 
 export default routes;
