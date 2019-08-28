@@ -1,15 +1,33 @@
 import { Router } from 'express';
+import multer from 'multer';
 
+import multerConfig from './config/multer';
 // Controllers
 import UserController from './app/controllers/UserController';
+import SessionController from './app/controllers/SessionController';
+import FileController from './app/controllers/FileController';
+import MeetupController from './app/controllers/MeetupController';
+
+import authMiddleware from './app/middlewares/auth';
 
 const routes = new Router();
+const uploads = multer(multerConfig);
 
-// cadastro de usuario
 routes.post('/users', UserController.store);
+routes.post('/sessions', SessionController.store);
 
-// iniciar sessão de usuario
+// middlewares
+routes.use(authMiddleware);
 
-// update de usuario
+routes.put('/users', UserController.update);
+
+// banner
+routes.post('/file', uploads.single('file'), FileController.store);
+
+// add new meetup
+routes.get('/meetup', MeetupController.list);
+routes.post('/meetup', MeetupController.store);
+routes.put('/meetup', MeetupController.update);
+routes.delete('/meetup', MeetupController.delete);
 
 export default routes;
