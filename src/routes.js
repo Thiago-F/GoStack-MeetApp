@@ -7,7 +7,7 @@ import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
 import MeetupController from './app/controllers/MeetupController';
-import RegisterMeetupController from './app/controllers/RegisterMeetupController';
+import SubscriptionController from './app/controllers/SubscriptionController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -26,12 +26,13 @@ routes.put('/users', UserController.update);
 routes.post('/file', uploads.single('file'), FileController.store);
 
 // add new meetup
-routes.get('/meetup', MeetupController.index);
+routes.get('/meetups', MeetupController.list); // lista todos
+routes.get('/meetup', MeetupController.index); // lista todos de um usuario
 routes.post('/meetup', MeetupController.store);
 routes.put('/meetup', MeetupController.update);
 routes.delete('/meetup', MeetupController.delete);
 
 // register in a meetup
-routes.post('/register', RegisterMeetupController.store);
+routes.post('/register', SubscriptionController.store);
 
 export default routes;

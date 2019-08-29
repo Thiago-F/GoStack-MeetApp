@@ -7,11 +7,13 @@ import authConfig from '../../config/auth';
 class SessionController {
     async store(req, res) {
         const validation = Yup.object().shape({
-            email: Yup.email().required(),
+            email: Yup.string()
+                .email()
+                .required(),
             password: Yup.string().required(),
         });
 
-        if (!(await validation.isValid())) {
+        if (!(await validation.isValid(req.body))) {
             return res.status(400).json({ error: 'Validation fails' });
         }
 

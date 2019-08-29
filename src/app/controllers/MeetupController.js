@@ -1,9 +1,17 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore } from 'date-fns';
+import {
+    startOfHour,
+    parseISO,
+    isBefore,
+    startOfDay,
+    endOfDay,
+} from 'date-fns';
+import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 
 class MeetupController {
     async index(req, res) {
+        // retorna todos os meetups de um usuario
         const meetups = await Meetup.findAll({
             where: { user_id: req.userId },
         });
@@ -13,7 +21,15 @@ class MeetupController {
 
     // criar listagem de meetups por data
     async list(req, res) {
-        return res.json({ list: true });
+        const date = parseISO(req.query.date);
+
+        const meetups = await Meetup.findAll({
+            where: {
+                [Op.between]: [startOfDay(date), endOfDay(date)],
+            },
+        });
+
+        return res.json(meetups);
     }
 
     async store(req, res) {
