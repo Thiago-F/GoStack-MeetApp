@@ -1,13 +1,23 @@
 import { isBefore, parseISO } from 'date-fns';
 import Meetup from '../models/Meetup';
 import Subscription from '../models/Subscription';
+import User from '../models/User';
+import Mail from '../../lib/Mail';
 
 class SubscriptionController {
     async store(req, res) {
         // criação de registro
         const { meetup_id } = req.body;
 
-        const meetup = await Meetup.findByPk(meetup_id);
+        const meetup = await Meetup.findByPk(meetup_id, {
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'name', 'email'],
+                },
+            ],
+        });
 
         if (!meetup) {
             return res.status(404).json({ error: 'Meetup does not exists' });
@@ -27,17 +37,16 @@ class SubscriptionController {
          * */
         const meetupList = await Subscription.findAll({
             where: { user_id: req.userId },
-            include: [{
-                model: Meetup
-            }]
+            include: [
+                {
+                    model: Meetup,
+                },
+            ],
         });
 
-
-        let meetups = meetupList.filter(mt => {
+        const meetups = meetupList.filter(mt => {
             return mt.Meetup.date === meetup.date;
         });
-
-        console.log('>>', meetups)
 
         if (meetups.length !== 0) {
             return res.status(400).json({
@@ -68,6 +77,12 @@ class SubscriptionController {
         await Subscription.create({ meetup_id, user_id: req.userId });
 
         // enviar email ao organizador nesse momento
+
+        Mail.sendMail({
+            to: `${meetup.user.name} <${meetup.user.email}>`,
+            subject: 'Novo membro',
+            text: 'Você tem um novo membro',
+        });
 
         return res.json({ success: 'Register successfully created' });
     }
