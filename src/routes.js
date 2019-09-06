@@ -8,6 +8,7 @@ import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
 import MeetupController from './app/controllers/MeetupController';
 import SubscriptionController from './app/controllers/SubscriptionController';
+import OwnerController from './app/controllers/OwnerController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -25,14 +26,15 @@ routes.put('/users', UserController.update);
 // banner
 routes.post('/file', uploads.single('file'), FileController.store);
 
-// add new meetup
-routes.get('/meetups', MeetupController.list); // lista todos
-routes.get('/meetup', MeetupController.index); // lista todos de um usuario
+routes.get('/owner', OwnerController.index); // lista todos de um usuario
+
+routes.get('/meetup', MeetupController.index);
+routes.get('/meetups', MeetupController.list);
 routes.post('/meetup', MeetupController.store);
 routes.put('/meetup', MeetupController.update);
 routes.delete('/meetup', MeetupController.delete);
 
 // register in a meetup
-routes.post('/register', SubscriptionController.store);
+routes.post('/subscription', SubscriptionController.store);
 
 export default routes;

@@ -27,13 +27,19 @@ class SubscriptionController {
          * */
         const meetupList = await Subscription.findAll({
             where: { user_id: req.userId },
+            include: [{
+                model: Meetup
+            }]
         });
 
-        meetupList.filter(mt => {
-            return mt.date === meetup.date && mt.id !== meetup_id;
+
+        let meetups = meetupList.filter(mt => {
+            return mt.Meetup.date === meetup.date;
         });
 
-        if (meetupList.length !== 0) {
+        console.log('>>', meetups)
+
+        if (meetups.length !== 0) {
             return res.status(400).json({
                 error: 'Register failed: You must have a meetup on this hour',
             });
