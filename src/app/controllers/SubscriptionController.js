@@ -81,7 +81,11 @@ class SubscriptionController {
         Mail.sendMail({
             to: `${meetup.user.name} <${meetup.user.email}>`,
             subject: 'Novo membro',
-            text: 'Você tem um novo membro',
+            template: 'cancellation', // template esperado
+            context: {
+                // variaveis esperadas nos templates
+                user: 'Thiago',
+            },
         });
 
         return res.json({ success: 'Register successfully created' });
