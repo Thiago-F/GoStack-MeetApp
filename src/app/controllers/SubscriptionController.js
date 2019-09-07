@@ -3,9 +3,54 @@ import Meetup from '../models/Meetup';
 import Subscription from '../models/Subscription';
 import User from '../models/User';
 import Mail from '../../lib/Mail';
+import { Op } from 'sequelize'
+import File from '../models/File';
 
 class SubscriptionController {
+
+    async list(req, res) {
+
+        const subcriptions = await Subscription.findAll({
+            where: {
+                user_id: req.userId,
+            },
+            attributes: [
+                'id'
+            ],
+            include: [
+                {
+                    model: Meetup,
+                    where: {
+                        date: {
+                            [Op.gt]: new Date(),
+                        }
+                    },
+                    attributes: [
+                        'id', 'title', 'desc', 'locate', 'date'
+                    ],
+                    include: [
+                        {
+                            model: File,
+                            as: 'banner',
+                            attributes: [
+                                'id', 'path', 'url'
+                            ]
+                        }
+                    ]
+                }
+            ],
+        })
+
+        return res.json(subcriptions)
+    }
+
     async store(req, res) {
+
+        const user = await User.findByPk(req.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+
         // criação de registro
         const { meetup_id } = req.body;
 
@@ -78,13 +123,17 @@ class SubscriptionController {
 
         // enviar email ao organizador nesse momento
 
-        Mail.sendMail({
-            to: `${meetup.user.name} <${meetup.user.email}>`,
-            subject: 'Novo membro',
+        console.log('---- enviando email ----')
+        await Mail.sendMail({
+            to: `${user.name} <${user.email}>`,
+            subject: `Nova inscrição no evento: `,
             template: 'cancellation', // template esperado
             context: {
                 // variaveis esperadas nos templates
-                user: 'Thiago',
+                name: meetup.user.name, //nome do dono do evento
+                meetup: meetup.title,
+                user: user.name,
+                email: user.email,
             },
         });
 

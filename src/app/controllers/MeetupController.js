@@ -6,31 +6,41 @@ import {
     startOfDay,
     endOfDay,
 } from 'date-fns';
-import { Op } from 'sequelize';
+import { Op, } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 import File from '../models/File';
 import Subscription from '../models/Subscription';
 
 class MeetupController {
-    async index(req, res) {
-        const meetups = await Subscription.findAll({
+    // async index(req, res) {
+    //     // const meetups = await Subscription.findAll({
+    //     //     where: {
+    //     //         user_id: req.userId,
+    //     //         // date: {
+    //     //         //     [Op.startsWith]: new Date()
+    //     //         // }
+    //     //     },
+    //     //     include: [
+    //     //         {
+    //     //             model: Meetup,
+    //     //             attributes: ['id', 'title', 'date'],
+    //     //             where: {
+    //     //                 date: {},
+    //     //             },
+    //     //         },
+    //     //     ],
+    //     // });
+    // }
+
+    async listAll(req, res) {
+        const meetups = await Meetup.findAll({
             where: {
-                user_id: req.userId,
-                // date: {
-                //     [Op.startsWith]: new Date()
-                // }
-            },
-            include: [
-                {
-                    model: Meetup,
-                    attributes: ['id', 'title', 'date'],
-                    where: {
-                        date: {},
-                    },
-                },
-            ],
-        });
+                date: {
+                    [Op.gt]: new Date(),
+                }
+            }
+        })
 
         return res.json(meetups);
     }
