@@ -28,8 +28,8 @@ routes.post('/file', uploads.single('file'), FileController.store);
 
 routes.get('/owner', OwnerController.index); // lista todos de um usuario
 
-routes.get('/meetup', MeetupController.listAll); //listar todos
-routes.get('/meetups', MeetupController.list); //listar por data
+routes.get('/meetup', MeetupController.listAll); // listar todos
+routes.get('/meetups', MeetupController.list); // listar por data
 
 routes.post('/meetup', MeetupController.store);
 routes.put('/meetup', MeetupController.update);

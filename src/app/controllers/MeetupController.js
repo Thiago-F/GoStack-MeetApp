@@ -6,7 +6,7 @@ import {
     startOfDay,
     endOfDay,
 } from 'date-fns';
-import { Op, } from 'sequelize';
+import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 import File from '../models/File';
@@ -38,9 +38,9 @@ class MeetupController {
             where: {
                 date: {
                     [Op.gt]: new Date(),
-                }
-            }
-        })
+                },
+            },
+        });
 
         return res.json(meetups);
     }

@@ -1,54 +1,48 @@
 import { isBefore, parseISO } from 'date-fns';
+import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import Subscription from '../models/Subscription';
 import User from '../models/User';
-import Mail from '../../lib/Mail';
-import { Op } from 'sequelize'
+
+import Queue from '../../lib/Queue';
+import newSubcriptionMail from '../jobs/newSubscriptionMail';
+
 import File from '../models/File';
 
 class SubscriptionController {
-
     async list(req, res) {
-
         const subcriptions = await Subscription.findAll({
             where: {
                 user_id: req.userId,
             },
-            attributes: [
-                'id'
-            ],
+            attributes: ['id'],
             include: [
                 {
                     model: Meetup,
                     where: {
                         date: {
                             [Op.gt]: new Date(),
-                        }
+                        },
                     },
-                    attributes: [
-                        'id', 'title', 'desc', 'locate', 'date'
-                    ],
+                    attributes: ['id', 'title', 'desc', 'locate', 'date'],
                     include: [
                         {
                             model: File,
                             as: 'banner',
-                            attributes: [
-                                'id', 'path', 'url'
-                            ]
-                        }
-                    ]
-                }
+                            attributes: ['id', 'path', 'url'],
+                        },
+                    ],
+                },
             ],
-        })
+        });
 
-        return res.json(subcriptions)
+        return res.json(subcriptions);
     }
 
     async store(req, res) {
-
         const user = await User.findByPk(req.userId);
         if (!user) {
-            return res.status(404).json({ error: 'User not found' })
+            return res.status(404).json({ error: 'User not found' });
         }
 
         // criação de registro
@@ -122,20 +116,10 @@ class SubscriptionController {
         await Subscription.create({ meetup_id, user_id: req.userId });
 
         // enviar email ao organizador nesse momento
-
-        console.log('---- enviando email ----')
-        await Mail.sendMail({
-            to: `${user.name} <${user.email}>`,
-            subject: `Nova inscrição no evento: `,
-            template: 'cancellation', // template esperado
-            context: {
-                // variaveis esperadas nos templates
-                name: meetup.user.name, //nome do dono do evento
-                meetup: meetup.title,
-                user: user.name,
-                email: user.email,
-            },
-        });
+        await Queue.add(newSubcriptionMail.key, {
+            user,
+            meetup
+        })
 
         return res.json({ success: 'Register successfully created' });
     }
