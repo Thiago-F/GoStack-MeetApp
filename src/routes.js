@@ -28,7 +28,7 @@ routes.post('/file', uploads.single('file'), FileController.store);
 
 routes.get('/owner', OwnerController.index); // lista todos de um usuario
 
-routes.get('/meetup', MeetupController.index);
+routes.get('/meetup/:id', MeetupController.index);
 routes.get('/meetups', MeetupController.list);
 routes.post('/meetup', MeetupController.store);
 routes.put('/meetup', MeetupController.update);

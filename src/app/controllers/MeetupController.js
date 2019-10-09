@@ -10,29 +10,14 @@ import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 import File from '../models/File';
-import Subscription from '../models/Subscription';
 
 class MeetupController {
     async index(req, res) {
-        const meetups = await Subscription.findAll({
-            where: {
-                user_id: req.userId,
-                // date: {
-                //     [Op.startsWith]: new Date()
-                // }
-            },
-            include: [
-                {
-                    model: Meetup,
-                    attributes: ['id', 'title', 'date'],
-                    where: {
-                        date: {},
-                    },
-                },
-            ],
-        });
+        const { id } = req.params;
 
-        return res.json(meetups);
+        const meetup = await Meetup.findByPk(id);
+
+        return res.json(meetup);
     }
 
     // criar listagem de meetups por data

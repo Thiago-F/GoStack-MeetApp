@@ -1,10 +1,31 @@
 import { isBefore, parseISO } from 'date-fns';
+
 import Meetup from '../models/Meetup';
 import Subscription from '../models/Subscription';
 import User from '../models/User';
+
 import Mail from '../../lib/Mail';
 
 class SubscriptionController {
+    async list(req, res) {
+        const meetups = await Subscription.findAll({
+            where: {
+                user_id: req.userId,
+            },
+            include: [
+                {
+                    model: Meetup,
+                    attributes: ['id', 'title', 'date'],
+                    where: {
+                        date: {},
+                    },
+                },
+            ],
+        });
+
+        return res.json(meetups);
+    }
+
     async store(req, res) {
         // criação de registro
         const { meetup_id } = req.body;
